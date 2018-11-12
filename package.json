@@ -4,6 +4,7 @@
   "description": "Stellarport A3S SDK",
   "main": "package-scripts.js",
   "scripts": {
+    "start": "nps",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
