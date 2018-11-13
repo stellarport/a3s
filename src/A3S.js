@@ -181,7 +181,7 @@ export class A3S {
             }
         );
 
-        if (payload.transaction.id.toString() !== id.toString() || withdrawal.kind !== 'withdrawal') {
+        if (payload.transaction.id.toString() !== id.toString() || payload.transaction.kind !== 'withdrawal') {
             return null;
         }
 
