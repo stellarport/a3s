@@ -174,18 +174,20 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @returns {Promise<Object>}
        */
     async withdrawal(id) {
-        const withdrawal = await this._fetchAndVerify(
+        const payload = await this._fetchAndVerify(
         this.host + '/Transaction',
         {
             query: { id } });
 
 
 
-        if (withdrawal.id !== id || withdrawal.kind !== 'withdrawal') {
+        if (payload.transaction.id.toString() !== id.toString() || withdrawal.kind !== 'withdrawal') {
             return null;
         }
 
-        return withdrawal;
+        return {
+            withdrawal: payload.transaction };
+
     }
 
     /**
