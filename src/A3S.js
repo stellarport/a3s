@@ -199,6 +199,10 @@ export class A3S {
      */
     async _fetchAndVerify(uri, options = {}) {
         options.transform = function (body, response, resolveWithFullResponse) {
+            if (response.status !== 200) {
+                return body;
+            }
+            
             if (!this.verifyPayload(response.headers.Signature, body)) {
                 return null;
             }
