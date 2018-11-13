@@ -199,7 +199,7 @@ export class A3S {
      */
     async _fetchAndVerify(uri, options = {}) {
         options.transform = function (body, response, resolveWithFullResponse) {
-            if (response.status !== 200) {
+            if (response.statusCode !== 200) {
                 return body;
             }
             

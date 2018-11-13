@@ -199,7 +199,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async _fetchAndVerify(uri, options = {}) {
         options.transform = function (body, response, resolveWithFullResponse) {
-            if (response.status !== 200) {
+            if (response.statusCode !== 200) {
                 return body;
             }
 
