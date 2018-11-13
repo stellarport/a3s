@@ -201,11 +201,11 @@ A3S = exports.A3S = class A3S {constructor() {this.
         const self = this;
 
         options.transform = function (body, response, resolveWithFullResponse) {
-            if (response.statusCode !== 200) {
+            if (response.statusCode !== 200 || !body) {
                 return body;
             }
 
-            if (!self.verifyPayload(response.headers.signature, body)) {
+            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body)) {
                 return null;
             }
             return body;
@@ -236,5 +236,5 @@ A3S = exports.A3S = class A3S {constructor() {this.
     verifyPayload(signature, payload, pubKey) {
         pubKey = pubKey || this.signingPubKey;
         const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
-        return keypair.verify(JSON.stringify(payload), signature);
+        return keypair.verify(JSON.stringify(payload), Buffer.from(signature, 'base64'));
     }};
