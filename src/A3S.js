@@ -231,7 +231,7 @@ export class A3S {
         });
     }
 
-    async verifyPayload(signature, payload, pubKey) {
+    verifyPayload(signature, payload, pubKey) {
         pubKey = pubKey || this.signingPubKey;
         const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
         return keypair.verify( JSON.stringify(payload), signature);
