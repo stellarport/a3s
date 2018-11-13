@@ -198,12 +198,14 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @private
        */
     async _fetchAndVerify(uri, options = {}) {
+        const self = this;
+
         options.transform = function (body, response, resolveWithFullResponse) {
             if (response.statusCode !== 200) {
                 return body;
             }
 
-            if (!this.verifyPayload(response.headers.signature, body)) {
+            if (!self.verifyPayload(response.headers.signature, body)) {
                 return null;
             }
             return body;
