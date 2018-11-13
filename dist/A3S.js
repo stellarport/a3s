@@ -203,7 +203,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
                 return body;
             }
 
-            if (!this.verifyPayload(response.headers.Signature, body)) {
+            if (!this.verifyPayload(response.headers.signature, body)) {
                 return null;
             }
             return body;
@@ -231,7 +231,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
     }
 
-    async verifyPayload(signature, payload, pubKey) {
+    verifyPayload(signature, payload, pubKey) {
         pubKey = pubKey || this.signingPubKey;
         const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
         return keypair.verify(JSON.stringify(payload), signature);

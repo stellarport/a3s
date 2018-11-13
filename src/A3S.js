@@ -203,7 +203,7 @@ export class A3S {
                 return body;
             }
             
-            if (!this.verifyPayload(response.headers.Signature, body)) {
+            if (!this.verifyPayload(response.headers.signature, body)) {
                 return null;
             }
             return body;
