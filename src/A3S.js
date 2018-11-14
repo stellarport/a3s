@@ -20,7 +20,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async info() {
-        return this._fetch(this.host + '/Info');
+        return this._fetchAndVerify(this.host + '/Info');
     }
 
     /**
@@ -77,7 +77,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async depositSent(reference, asset_code, asset_issuer) {
-        return this._fetch(
+        return this._fetchAndVerify(
             this.host + '/Deposit/Sent',
             {
                 query: {
@@ -97,7 +97,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async depositConfirmed(reference, asset_code, asset_issuer) {
-        return this._fetch(
+        return this._fetchAndVerify(
             this.host + '/Deposit/Confirmed',
             {
                 query: {
@@ -120,7 +120,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async depositInstructions(asset_code, asset_issuer, account, options) {
-        return this._fetch(
+        return this._fetchAndVerify(
             this.host + '/Deposit',
             {
                 query: {
@@ -140,7 +140,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async withdrawalSent(tx_hash, op_order) {
-        return this._fetch(
+        return this._fetchAndVerify(
             this.host + '/Withdraw/Sent',
             {
                 query: { id }
@@ -156,7 +156,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async withdrawalConfirmed(reference, asset_code, asset_issuer) {
-        return this._fetch(
+        return this._fetchAndVerify(
             this.host + '/Withdraw/Confirmed',
             {
                 query: {
