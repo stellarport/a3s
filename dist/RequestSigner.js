@@ -16,7 +16,7 @@ RequestSigner = exports.RequestSigner = class RequestSigner {
        */
     sign(payload, response) {
         if (payload) {
-            const signature = signingKeypair.sign(JSON.stringify(payload)).toString('base64');
+            const signature = this.keypair.sign(JSON.stringify(payload)).toString('base64');
             response.set('Signature', signature);
         }
 
