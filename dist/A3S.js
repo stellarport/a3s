@@ -181,7 +181,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
 
 
-        if (payload.transaction.id.toString() !== id.toString() || withdrawal.kind !== 'withdrawal') {
+        if (payload.transaction.id.toString() !== id.toString() || payload.transaction.kind !== 'withdrawal') {
             return null;
         }
 
