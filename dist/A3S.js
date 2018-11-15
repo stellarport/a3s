@@ -26,6 +26,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     /**
        * Fetches a list of transactions
        * @param {string} asset_code the desired asset code
+       * @param {string} asset_issuer the issuing account id
        * @param {string} account the desired account (stellar public key)
        * @param [options]
        * @param {Date|string} [options.no_older_than]
@@ -33,9 +34,9 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} [options.paging_id]
        * @returns {Promise<Object>}
        */
-    async transactions(asset_code, account, options) {
+    async transactions(asset_code, asset_issuer, account, options) {
         return this._fetchAndVerify(
-        this.host + '/Transactions',
+        this.host + '/' + asset_issuer + '/Transactions',
         {
             query: {
                 asset_code,
@@ -78,12 +79,11 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async depositSent(reference, asset_code, asset_issuer) {
         return this._fetchAndVerify(
-        this.host + '/Deposit/Sent',
+        this.host + '/' + asset_issuer + '/Deposit/Sent',
         {
             query: {
                 reference,
-                asset_code,
-                asset_issuer } });
+                asset_code } });
 
 
 
@@ -98,12 +98,11 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async depositConfirmed(reference, asset_code, asset_issuer) {
         return this._fetchAndVerify(
-        this.host + '/Deposit/Confirmed',
+        this.host + '/' + asset_issuer + '/Deposit/Confirmed',
         {
             query: {
                 reference,
-                asset_code,
-                asset_issuer } });
+                asset_code } });
 
 
 
@@ -121,12 +120,32 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async depositInstructions(asset_code, asset_issuer, account, options) {
         return this._fetchAndVerify(
-        this.host + '/Deposit',
+        this.host + '/' + asset_issuer + '/Deposit',
         {
             query: {
                 asset_code,
-                asset_issuer,
                 account,
+                ...options } });
+
+
+
+    }
+
+    /**
+       * Fetches withdrawal instructions from A3S.
+       * @param {string} asset_code
+       * @param {string} asset_issuer
+       * @param {string} dest
+       * @param {Object} [options]
+       * @param {string} [options.dest_extra] A dest extra if required
+       * @returns {Promise<void>}
+       */
+    async withdrawalInstructions(asset_code, asset_issuer, dest, options) {
+        return this._fetchAndVerify(
+        this.host + '/' + asset_issuer + '/Deposit',
+        {
+            query: {
+                asset_code,
                 ...options } });
 
 
@@ -157,12 +176,11 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async withdrawalConfirmed(reference, asset_code, asset_issuer) {
         return this._fetchAndVerify(
-        this.host + '/Withdraw/Confirmed',
+        this.host + '/' + asset_issuer + '/Withdraw/Confirmed',
         {
             query: {
                 reference,
-                asset_code,
-                asset_issuer } });
+                asset_code } });
 
 
 
