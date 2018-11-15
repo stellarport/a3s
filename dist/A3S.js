@@ -19,8 +19,8 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * Fetches info from A3S regarding what assets are available
        * @returns {Promise<Object>}
        */
-    async info() {
-        return this._fetchAndVerify(this.host + '/Info');
+    async info(asset_issuer) {
+        return this._fetchAndVerify(this.host + '/' + asset_issuer + '/Info');
     }
 
     /**
@@ -55,13 +55,13 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} [options.external_transaction_id]
        * @returns {Promise<Object>}
        */
-    async transaction(options) {
+    async transaction(asset_issuer, options) {
         if (!options.id && !options.stellar_transaction_id && !options.external_transaction_id) {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
 
         return this._fetchAndVerify(
-        this.host + '/Transaction',
+        this.host + '/' + asset_issuer + '/Transaction',
         {
             query: {
                 ...options } });
@@ -191,9 +191,9 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param id The anchor transaction id
        * @returns {Promise<Object>}
        */
-    async withdrawal(id) {
+    async withdrawal(asset_issuer, id) {
         const payload = await this._fetchAndVerify(
-        this.host + '/Transaction',
+        this.host + '/' + asset_issuer + '/Transaction',
         {
             query: { id } });
 
