@@ -60,14 +60,37 @@ export class A3S {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
 
-        return this._fetchAndVerify(
+        const payload = await this._fetchAndVerify(
             this.host + '/' + asset_issuer + '/Transaction',
             {
                 query: {
                     ...options
                 }
             }
-        )
+        );
+
+        if (payload.transaction.id.toString() !== id.toString()) {
+            return null;
+        }
+
+        return payload;
+    }
+
+    /**
+     * Fetches a deposit from A3S
+     * @param id The anchor transaction id
+     * @returns {Promise<Object>}
+     */
+    async deposit(asset_issuer, id) {
+        const payload = await this.transaction({id});
+
+        if (payload.transaction.kind !== 'deposit') {
+            return null;
+        }
+
+        return {
+            deposit: payload.transaction
+        };
     }
 
     /**
@@ -192,14 +215,9 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async withdrawal(asset_issuer, id) {
-        const payload = await this._fetchAndVerify(
-            this.host + '/' + asset_issuer + '/Transaction',
-            {
-                query: { id }
-            }
-        );
+        const payload = await this.transaction({id});
 
-        if (payload.transaction.id.toString() !== id.toString() || payload.transaction.kind !== 'withdrawal') {
+        if (payload.transaction.kind !== 'withdrawal') {
             return null;
         }
 
