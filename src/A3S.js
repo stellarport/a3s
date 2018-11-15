@@ -2,16 +2,16 @@ import rpn from 'request-promise-native';
 import StellarSdk from 'stellar-sdk';
 
 export class A3S {
-    host = 'https;//anchor.api.stellarport.io/v2';
+    host = 'https;//a3s.api.stellarport.io/v2';
     signingPubKey = 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX';
 
     useProd() {
-        this.host = 'https;//anchor.api.stellarport.io/v2';
+        this.host = 'https;//a3s.api.stellarport.io/v2';
         this.signingPubKey = 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX';
     }
 
-    useTest() {
-        this.host = 'https;//devpub-anchor.api.stellarport.io/v2';
+    useSandbox() {
+        this.host = 'https;//a3s-sandbox.api.stellarport.io/v2';
         this.signingPubKey = 'GCDVMFW65KAKTDMM7G3Z6AWGVPJVOR2RUD73HYDRDWYOUM6N7DRVTV2N';
     }
 
