@@ -1,8 +1,8 @@
 {
   "name": "a3s",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Stellarport A3S SDK",
-  "main": "package-scripts.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "nps",
     "test": "echo \"Error: no test specified\" && exit 1"

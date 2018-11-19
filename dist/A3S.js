@@ -49,6 +49,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
     /**
        * Fetches a specific transaction. One of id, stellar_transaction_id or external_transaction_id must be specified.
+       * @param asset_issuer
        * @param [options]
        * @param {number} [options.id]
        * @param {string} [options.stellar_transaction_id]
@@ -78,11 +79,12 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
     /**
        * Fetches a deposit from A3S
+       * @param asset_issuer
        * @param id The anchor transaction id
        * @returns {Promise<Object>}
        */
     async deposit(asset_issuer, id) {
-        const payload = await this.transaction({ id });
+        const payload = await this.transaction(asset_issuer, { id });
 
         if (payload.transaction.kind !== 'deposit') {
             return null;
@@ -211,11 +213,12 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
     /**
        * Fetches a withdrawal from A3S
+       * @param {string} asset_issuer
        * @param id The anchor transaction id
        * @returns {Promise<Object>}
        */
     async withdrawal(asset_issuer, id) {
-        const payload = await this.transaction({ id });
+        const payload = await this.transaction(asset_issuer, { id });
 
         if (payload.transaction.kind !== 'withdrawal') {
             return null;
