@@ -2,16 +2,16 @@ import rpn from 'request-promise-native';
 import StellarSdk from 'stellar-sdk';
 
 export class A3S {
-    host = 'https;//a3s.api.stellarport.io/v2';
+    host = 'https://a3s.api.stellarport.io/v2';
     signingPubKey = 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX';
 
     useProd() {
-        this.host = 'https;//a3s.api.stellarport.io/v2';
+        this.host = 'https://a3s.api.stellarport.io/v2';
         this.signingPubKey = 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX';
     }
 
     useSandbox() {
-        this.host = 'https;//a3s-sandbox.api.stellarport.io/v2';
+        this.host = 'https://a3s-sandbox.api.stellarport.io/v2';
         this.signingPubKey = 'GCDVMFW65KAKTDMM7G3Z6AWGVPJVOR2RUD73HYDRDWYOUM6N7DRVTV2N';
     }
 
@@ -49,6 +49,7 @@ export class A3S {
 
     /**
      * Fetches a specific transaction. One of id, stellar_transaction_id or external_transaction_id must be specified.
+     * @param asset_issuer
      * @param [options]
      * @param {number} [options.id]
      * @param {string} [options.stellar_transaction_id]
@@ -78,11 +79,12 @@ export class A3S {
 
     /**
      * Fetches a deposit from A3S
+     * @param asset_issuer
      * @param id The anchor transaction id
      * @returns {Promise<Object>}
      */
     async deposit(asset_issuer, id) {
-        const payload = await this.transaction({id});
+        const payload = await this.transaction(asset_issuer, {id});
 
         if (payload.transaction.kind !== 'deposit') {
             return null;
@@ -211,11 +213,12 @@ export class A3S {
 
     /**
      * Fetches a withdrawal from A3S
+     * @param {string} asset_issuer
      * @param id The anchor transaction id
      * @returns {Promise<Object>}
      */
     async withdrawal(asset_issuer, id) {
-        const payload = await this.transaction({id});
+        const payload = await this.transaction(asset_issuer, {id});
 
         if (payload.transaction.kind !== 'withdrawal') {
             return null;
