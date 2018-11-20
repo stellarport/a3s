@@ -12,7 +12,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
     useSandbox() {
         this.host = 'https://a3s-sandbox.api.stellarport.io/v2';
-        this.signingPubKey = 'GCDVMFW65KAKTDMM7G3Z6AWGVPJVOR2RUD73HYDRDWYOUM6N7DRVTV2N';
+        this.signingPubKey = 'GC5FZPWTXINH652NYEW56UM6FZZVHDLLERX3KKL55PVQB2D5A2DG4Q47';
     }
 
     /**
@@ -70,8 +70,26 @@ A3S = exports.A3S = class A3S {constructor() {this.
 
 
 
-        if (payload.transaction.id.toString() !== id.toString()) {
-            return null;
+        if (payload) {
+            let identifier;
+            let corresponding;
+
+            if (options.id) {
+                identifier = options.id;
+                corresponding = payload.transaction.id;
+            } else
+            if (options.stellar_transaction_id) {
+                identifier = options.stellar_transaction_id;
+                corresponding = payload.transaction.stellar_transaction_id;
+            } else
+            if (options.external_transaction_id) {
+                identifier = options.external_transaction_id;
+                corresponding = payload.transaction.external_transaction_id;
+            }
+
+            if (identifier !== corresponding) {
+                return null;
+            }
         }
 
         return payload;
@@ -86,7 +104,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     async deposit(asset_issuer, id) {
         const payload = await this.transaction(asset_issuer, { id });
 
-        if (payload.transaction.kind !== 'deposit') {
+        if (payload && payload.transaction.kind !== 'deposit') {
             return null;
         }
 
@@ -220,7 +238,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     async withdrawal(asset_issuer, id) {
         const payload = await this.transaction(asset_issuer, { id });
 
-        if (payload.transaction.kind !== 'withdrawal') {
+        if (payload && payload.transaction.kind !== 'withdrawal') {
             return null;
         }
 
