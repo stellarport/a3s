@@ -34,7 +34,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} [options.paging_id]
        * @returns {Promise<Object>}
        */
-    async transactions(asset_code, asset_issuer, account, options) {
+    async transactions(asset_code, asset_issuer, account, options = {}) {
         return this._fetchAndVerify(
         this.host + '/' + asset_issuer + '/Transactions',
         {
@@ -56,7 +56,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} [options.external_transaction_id]
        * @returns {Promise<Object>}
        */
-    async transaction(asset_issuer, options) {
+    async transaction(asset_issuer, options = {}) {
         if (!options.id && !options.stellar_transaction_id && !options.external_transaction_id) {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
@@ -161,7 +161,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} [options.memo] if memo is specified, memo_type is also required
        * @returns {Promise<void>}
        */
-    async depositInstructions(asset_code, asset_issuer, account, options) {
+    async depositInstructions(asset_code, asset_issuer, account, options = {}) {
         return this._fetchAndVerify(
         this.host + '/' + asset_issuer + '/Deposit',
         {
@@ -183,7 +183,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} [options.dest_extra] A dest extra if required
        * @returns {Promise<void>}
        */
-    async withdrawalInstructions(asset_code, asset_issuer, dest, options) {
+    async withdrawalInstructions(asset_code, asset_issuer, dest, options = {}) {
         return this._fetchAndVerify(
         this.host + '/' + asset_issuer + '/Deposit',
         {
