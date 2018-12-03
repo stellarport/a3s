@@ -18,7 +18,7 @@ export class RequestSigner {
     sign(request, response, payload) {
         if (request.query.nonce) {
             const toSign = {
-                nonce: req.query.nonce,
+                nonce: request.query.nonce,
                 payload
             };
             const signature = this.keypair.sign(JSON.stringify(toSign)).toString('base64');
