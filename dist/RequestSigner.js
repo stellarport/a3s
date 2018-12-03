@@ -16,7 +16,7 @@ RequestSigner = exports.RequestSigner = class RequestSigner {
        * @param payload
        */
     sign(request, response, payload) {
-        if (request.query.nonce && response.body) {
+        if (request.query.nonce) {
             const toSign = {
                 nonce: req.query.nonce,
                 payload };
