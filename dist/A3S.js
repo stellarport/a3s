@@ -1,5 +1,6 @@
 'use strict';exports.__esModule = true;exports.A3S = undefined;var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
-var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
+var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
+var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 A3S = exports.A3S = class A3S {constructor() {this.
         host = 'https://a3s.api.stellarport.io/v2';this.
@@ -258,13 +259,19 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async _fetchAndVerify(uri, options = {}) {
         const self = this;
+        const nonce = _randomstring2.default.generate(20);
+
+        options.query = {
+            ...(options.query || {}),
+            nonce };
+
 
         options.transform = function (body, response, resolveWithFullResponse) {
             if (response.statusCode !== 200 || !body) {
                 return body;
             }
 
-            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body)) {
+            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body, nonce)) {
                 return null;
             }
             return body;
@@ -286,14 +293,18 @@ A3S = exports.A3S = class A3S {constructor() {this.
         return (0, _requestPromiseNative2.default)({
             method: options.method || 'GET',
             uri,
-            qs: options.query || {},
+            qs: options.query,
             json: true,
             transform: options.transform });
 
     }
 
-    verifyPayload(signature, payload, pubKey) {
+    verifyPayload(signature, payload, nonce, pubKey) {
         pubKey = pubKey || this.signingPubKey;
         const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
-        return keypair.verify(JSON.stringify(payload), Buffer.from(signature, 'base64'));
+        const signed = {
+            nonce,
+            payload };
+
+        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
     }};

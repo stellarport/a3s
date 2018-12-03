@@ -1,5 +1,6 @@
 import rpn from 'request-promise-native';
 import StellarSdk from 'stellar-sdk';
+import randomstring from 'randomstring';
 
 export class A3S {
     host = 'https://a3s.api.stellarport.io/v2';
@@ -258,13 +259,19 @@ export class A3S {
      */
     async _fetchAndVerify(uri, options = {}) {
         const self = this;
+        const nonce = randomstring.generate(20);
+
+        options.query = {
+            ...(options.query || {}),
+            nonce
+        };
 
         options.transform = function (body, response, resolveWithFullResponse) {
             if (response.statusCode !== 200 || !body) {
                 return body;
             }
 
-            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body)) {
+            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body, nonce)) {
                 return null;
             }
             return body;
@@ -286,15 +293,19 @@ export class A3S {
         return rpn({
             method: options.method || 'GET',
             uri,
-            qs: options.query || {},
+            qs: options.query,
             json: true,
             transform: options.transform
         });
     }
 
-    verifyPayload(signature, payload, pubKey) {
+    verifyPayload(signature, payload, nonce, pubKey) {
         pubKey = pubKey || this.signingPubKey;
         const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
-        return keypair.verify(JSON.stringify(payload), Buffer.from(signature, 'base64'));
+        const signed = {
+            nonce,
+            payload
+        };
+        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
     }
 }

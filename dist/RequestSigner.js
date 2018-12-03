@@ -11,12 +11,16 @@ RequestSigner = exports.RequestSigner = class RequestSigner {
 
     /**
        * Sets the signature header on a response, corresponding to a payload.
-       * @param payload
+       * @param request
        * @param response
        */
-    sign(payload, response) {
-        if (payload) {
-            const signature = this.keypair.sign(JSON.stringify(payload)).toString('base64');
+    sign(request, response) {
+        if (request.query.nonce && response.body) {
+            const toSign = {
+                nonce: req.query.nonce,
+                payload: response.body };
+
+            const signature = this.keypair.sign(JSON.stringify(toSign)).toString('base64');
             response.set('Signature', signature);
         }
 
