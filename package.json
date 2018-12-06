@@ -1,6 +1,6 @@
 {
   "name": "a3s",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Stellarport A3S SDK",
   "main": "dist/index.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "nps-utils": "^1.7.0"
   },
   "dependencies": {
+    "event-stream": "^3.3.4",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",

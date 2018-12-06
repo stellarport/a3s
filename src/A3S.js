@@ -186,10 +186,11 @@ export class A3S {
      */
     async withdrawalInstructions(asset_code, asset_issuer, dest, options = {}) {
         return this._fetchAndVerify(
-            this.host + '/' + asset_issuer + '/Deposit',
+            this.host + '/' + asset_issuer + '/Withdraw',
             {
                 query: {
                     asset_code,
+                    dest,
                     ...options
                 }
             }
