@@ -1,19 +1,24 @@
 'use strict';exports.__esModule = true;exports.A3S = undefined;var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
 var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
-var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
+var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);
+var _a3sConfig = require('./a3sConfig');
+var _ConnectionManager = require('./ConnectionManager');function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
-A3S = exports.A3S = class A3S {constructor() {this.
-        host = 'https://a3s.api.stellarport.io/v2';this.
-        signingPubKey = 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX';}
+A3S = exports.A3S = class A3S {
+    /**
+                                * @param environment sandbox or production
+                                */
+    constructor(requestSigningSecretKey, environment) {
+        this.config = environment === 'sandbox' ? _a3sConfig.a3sConfig.sandbox : _a3sConfig.a3sConfig.production;
+        this.connectionManager = new _ConnectionManager.ConnectionManager(this, requestSigningSecretKey);
+    }
 
     useProd() {
-        this.host = 'https://a3s.api.stellarport.io/v2';
-        this.signingPubKey = 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX';
+        this.config = _a3sConfig.a3sConfig.production;
     }
 
     useSandbox() {
-        this.host = 'https://a3s-sandbox.api.stellarport.io/v2';
-        this.signingPubKey = 'GC5FZPWTXINH652NYEW56UM6FZZVHDLLERX3KKL55PVQB2D5A2DG4Q47';
+        this.config = _a3sConfig.a3sConfig.sandbox;
     }
 
     /**
@@ -21,7 +26,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @returns {Promise<Object>}
        */
     async info(asset_issuer) {
-        return this._fetchAndVerify(this.host + '/' + asset_issuer + '/Info');
+        return this._fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
     }
 
     /**
@@ -37,7 +42,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async transactions(asset_code, asset_issuer, account, options = {}) {
         return this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Transactions',
+        this.config.host + '/' + asset_issuer + '/Transactions',
         {
             query: {
                 asset_code,
@@ -63,7 +68,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
         }
 
         const payload = await this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Transaction',
+        this.config.host + '/' + asset_issuer + '/Transaction',
         {
             query: {
                 ...options } });
@@ -123,7 +128,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async depositSent(reference, asset_code, asset_issuer) {
         return this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Deposit/Sent',
+        this.config.host + '/' + asset_issuer + '/Deposit/Sent',
         {
             query: {
                 reference,
@@ -142,7 +147,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async depositConfirmed(reference, asset_code, asset_issuer) {
         return this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Deposit/Confirmed',
+        this.config.host + '/' + asset_issuer + '/Deposit/Confirmed',
         {
             query: {
                 reference,
@@ -164,7 +169,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async depositInstructions(asset_code, asset_issuer, account, options = {}) {
         return this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Deposit',
+        this.config.host + '/' + asset_issuer + '/Deposit',
         {
             query: {
                 asset_code,
@@ -186,7 +191,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async withdrawalInstructions(asset_code, asset_issuer, dest, options = {}) {
         return this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Withdraw',
+        this.config.host + '/' + asset_issuer + '/Withdraw',
         {
             query: {
                 asset_code,
@@ -205,7 +210,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async withdrawalSent(tx_hash, op_order) {
         return this._fetchAndVerify(
-        this.host + '/Withdraw/Sent',
+        this.config.host + '/Withdraw/Sent',
         {
             query: { id } });
 
@@ -221,7 +226,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
        */
     async withdrawalConfirmed(reference, asset_code, asset_issuer) {
         return this._fetchAndVerify(
-        this.host + '/' + asset_issuer + '/Withdraw/Confirmed',
+        this.config.host + '/' + asset_issuer + '/Withdraw/Confirmed',
         {
             query: {
                 reference,
@@ -301,7 +306,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     }
 
     verifyPayload(signature, payload, nonce, pubKey) {
-        pubKey = pubKey || this.signingPubKey;
+        pubKey = pubKey || this.config.requestSigningPublicKey;
         const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
         const signed = {
             nonce,
