@@ -1,6 +1,8 @@
-import StellarSdk from "stellar-sdk";
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
+import rpn from 'request-promise-native';
+import StellarSdk from 'stellar-sdk';
+import randomstring from 'randomstring';
 
 export class ConnectionManager {
     constructor(a3s, requestSigningSecretKey) {
@@ -111,5 +113,75 @@ export class ConnectionManager {
         return {
             verified: true
         }
+    }
+
+    /**
+     *
+     * @param uri
+     * @param [options]
+     * @param {Object} [options.query] query parameters to send
+     * @param {string} [options.method='GET'] http method
+     * @returns {Promise<void>}
+     * @private
+     */
+    async fetchAndVerify(uri, options = {}) {
+        const self = this;
+        const nonce = randomstring.generate(20);
+
+        options.query = {
+            ...(options.query || {}),
+            nonce
+        };
+
+        options.transform = function (body, response, resolveWithFullResponse) {
+            if (response.statusCode !== 200 || !body) {
+                return body;
+            }
+
+            if (!response.headers.signature || !self.verifyPayloadSignature(response.headers.signature, body, nonce)) {
+                return null;
+            }
+            return body;
+        };
+
+        return this.fetch(uri, options);
+    }
+
+    /**
+     * Fetches from A3S
+     * @param uri
+     * @param [options]
+     * @param {Object} [options.query] query parameters to send
+     * @param {string} [options.method='GET'] http method
+     * @param {function} [options.transform] response transformation function
+     * @returns {Promise<void>}
+     */
+    async fetch(uri, options = {}) {
+        return rpn({
+            method: options.method || 'GET',
+            uri,
+            qs: options.query,
+            json: true,
+            transform: options.transform,
+            headers: {
+                'Signature': this.signUriAndQuery(uri, options.query)
+            }
+        });
+    }
+
+    verifyPayloadSignature(signature, payload, nonce, pubKey) {
+        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
+        const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
+        const signed = {
+            nonce,
+            payload
+        };
+        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
+    }
+
+    verifyUriSignature(signature, fullUri, pubKey) {
+        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
+        const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
+        return keypair.verify(fullUri, Buffer.from(signature, 'base64'));
     }
 }

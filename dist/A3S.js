@@ -1,8 +1,5 @@
-'use strict';exports.__esModule = true;exports.A3S = undefined;var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
-var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
-var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);
-var _a3sConfig = require('./a3sConfig');
-var _ConnectionManager = require('./ConnectionManager');function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
+'use strict';exports.__esModule = true;exports.A3S = undefined;var _a3sConfig = require('./a3sConfig');
+var _ConnectionManager = require('./ConnectionManager');let
 
 A3S = exports.A3S = class A3S {
     /**
@@ -26,7 +23,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<Object>}
        */
     async info(asset_issuer) {
-        return this._fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
+        return this.connectionManager.fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
     }
 
     /**
@@ -41,7 +38,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<Object>}
        */
     async transactions(asset_code, asset_issuer, account, options = {}) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Transactions',
         {
             query: {
@@ -67,7 +64,7 @@ A3S = exports.A3S = class A3S {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
 
-        const payload = await this._fetchAndVerify(
+        const payload = await this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Transaction',
         {
             query: {
@@ -127,7 +124,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<void>}
        */
     async depositSent(reference, asset_code, asset_issuer) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Deposit/Sent',
         {
             query: {
@@ -146,7 +143,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<void>}
        */
     async depositConfirmed(reference, asset_code, asset_issuer) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Deposit/Confirmed',
         {
             query: {
@@ -168,7 +165,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<void>}
        */
     async depositInstructions(asset_code, asset_issuer, account, options = {}) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Deposit',
         {
             query: {
@@ -190,7 +187,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<void>}
        */
     async withdrawalInstructions(asset_code, asset_issuer, dest, options = {}) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Withdraw',
         {
             query: {
@@ -209,7 +206,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<Object>}
        */
     async withdrawalSent(tx_hash, op_order) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/Withdraw/Sent',
         {
             query: { id } });
@@ -225,7 +222,7 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<Object>}
        */
     async withdrawalConfirmed(reference, asset_code, asset_issuer) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Withdraw/Confirmed',
         {
             query: {
@@ -252,68 +249,4 @@ A3S = exports.A3S = class A3S {
         return {
             withdrawal: payload.transaction };
 
-    }
-
-    /**
-       *
-       * @param uri
-       * @param [options]
-       * @param {Object} [options.query] query parameters to send
-       * @param {string} [options.method='GET'] http method
-       * @returns {Promise<void>}
-       * @private
-       */
-    async _fetchAndVerify(uri, options = {}) {
-        const self = this;
-        const nonce = _randomstring2.default.generate(20);
-
-        options.query = {
-            ...(options.query || {}),
-            nonce };
-
-
-        options.transform = function (body, response, resolveWithFullResponse) {
-            if (response.statusCode !== 200 || !body) {
-                return body;
-            }
-
-            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body, nonce)) {
-                return null;
-            }
-            return body;
-        };
-
-        return this._fetch(uri, options);
-    }
-
-    /**
-       * Fetches from A3S
-       * @param uri
-       * @param [options]
-       * @param {Object} [options.query] query parameters to send
-       * @param {string} [options.method='GET'] http method
-       * @param {function} [options.transform] response transformation function
-       * @returns {Promise<void>}
-       */
-    async _fetch(uri, options = {}) {
-        return (0, _requestPromiseNative2.default)({
-            method: options.method || 'GET',
-            uri,
-            qs: options.query,
-            json: true,
-            transform: options.transform,
-            headers: {
-                'Signature': this.connectionManager.signUriAndQuery(uri, options.query) } });
-
-
-    }
-
-    verifyPayload(signature, payload, nonce, pubKey) {
-        pubKey = pubKey || this.config.requestSigningPublicKey;
-        const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
-        const signed = {
-            nonce,
-            payload };
-
-        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
     }};

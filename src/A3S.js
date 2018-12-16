@@ -1,6 +1,3 @@
-import rpn from 'request-promise-native';
-import StellarSdk from 'stellar-sdk';
-import randomstring from 'randomstring';
 import {a3sConfig} from './a3sConfig';
 import {ConnectionManager} from './ConnectionManager';
 
@@ -26,7 +23,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async info(asset_issuer) {
-        return this._fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
+        return this.connectionManager.fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
     }
 
     /**
@@ -41,7 +38,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async transactions(asset_code, asset_issuer, account, options = {}) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Transactions',
             {
                 query: {
@@ -67,7 +64,7 @@ export class A3S {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
 
-        const payload = await this._fetchAndVerify(
+        const payload = await this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Transaction',
             {
                 query: {
@@ -127,7 +124,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async depositSent(reference, asset_code, asset_issuer) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Deposit/Sent',
             {
                 query: {
@@ -146,7 +143,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async depositConfirmed(reference, asset_code, asset_issuer) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Deposit/Confirmed',
             {
                 query: {
@@ -168,7 +165,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async depositInstructions(asset_code, asset_issuer, account, options = {}) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Deposit',
             {
                 query: {
@@ -190,7 +187,7 @@ export class A3S {
      * @returns {Promise<void>}
      */
     async withdrawalInstructions(asset_code, asset_issuer, dest, options = {}) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Withdraw',
             {
                 query: {
@@ -209,7 +206,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async withdrawalSent(tx_hash, op_order) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/Withdraw/Sent',
             {
                 query: { id }
@@ -225,7 +222,7 @@ export class A3S {
      * @returns {Promise<Object>}
      */
     async withdrawalConfirmed(reference, asset_code, asset_issuer) {
-        return this._fetchAndVerify(
+        return this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Withdraw/Confirmed',
             {
                 query: {
@@ -252,69 +249,5 @@ export class A3S {
         return {
             withdrawal: payload.transaction
         };
-    }
-
-    /**
-     *
-     * @param uri
-     * @param [options]
-     * @param {Object} [options.query] query parameters to send
-     * @param {string} [options.method='GET'] http method
-     * @returns {Promise<void>}
-     * @private
-     */
-    async _fetchAndVerify(uri, options = {}) {
-        const self = this;
-        const nonce = randomstring.generate(20);
-
-        options.query = {
-            ...(options.query || {}),
-            nonce
-        };
-
-        options.transform = function (body, response, resolveWithFullResponse) {
-            if (response.statusCode !== 200 || !body) {
-                return body;
-            }
-
-            if (!response.headers.signature || !self.verifyPayload(response.headers.signature, body, nonce)) {
-                return null;
-            }
-            return body;
-        };
-
-        return this._fetch(uri, options);
-    }
-
-    /**
-     * Fetches from A3S
-     * @param uri
-     * @param [options]
-     * @param {Object} [options.query] query parameters to send
-     * @param {string} [options.method='GET'] http method
-     * @param {function} [options.transform] response transformation function
-     * @returns {Promise<void>}
-     */
-    async _fetch(uri, options = {}) {
-        return rpn({
-            method: options.method || 'GET',
-            uri,
-            qs: options.query,
-            json: true,
-            transform: options.transform,
-            headers: {
-                'Signature': this.connectionManager.signUriAndQuery(uri, options.query)
-            }
-        });
-    }
-
-    verifyPayload(signature, payload, nonce, pubKey) {
-        pubKey = pubKey || this.config.requestSigningPublicKey;
-        const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
-        const signed = {
-            nonce,
-            payload
-        };
-        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
     }
 }

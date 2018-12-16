@@ -1,6 +1,8 @@
-'use strict';exports.__esModule = true;exports.ConnectionManager = undefined;var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
-var _jsonwebtoken = require('jsonwebtoken');var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
-var _moment = require('moment');var _moment2 = _interopRequireDefault(_moment);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
+'use strict';exports.__esModule = true;exports.ConnectionManager = undefined;var _jsonwebtoken = require('jsonwebtoken');var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+var _moment = require('moment');var _moment2 = _interopRequireDefault(_moment);
+var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
+var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
+var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 ConnectionManager = exports.ConnectionManager = class ConnectionManager {
     constructor(a3s, requestSigningSecretKey) {
@@ -111,4 +113,74 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         return {
             verified: true };
 
+    }
+
+    /**
+       *
+       * @param uri
+       * @param [options]
+       * @param {Object} [options.query] query parameters to send
+       * @param {string} [options.method='GET'] http method
+       * @returns {Promise<void>}
+       * @private
+       */
+    async fetchAndVerify(uri, options = {}) {
+        const self = this;
+        const nonce = _randomstring2.default.generate(20);
+
+        options.query = {
+            ...(options.query || {}),
+            nonce };
+
+
+        options.transform = function (body, response, resolveWithFullResponse) {
+            if (response.statusCode !== 200 || !body) {
+                return body;
+            }
+
+            if (!response.headers.signature || !self.verifyPayloadSignature(response.headers.signature, body, nonce)) {
+                return null;
+            }
+            return body;
+        };
+
+        return this.fetch(uri, options);
+    }
+
+    /**
+       * Fetches from A3S
+       * @param uri
+       * @param [options]
+       * @param {Object} [options.query] query parameters to send
+       * @param {string} [options.method='GET'] http method
+       * @param {function} [options.transform] response transformation function
+       * @returns {Promise<void>}
+       */
+    async fetch(uri, options = {}) {
+        return (0, _requestPromiseNative2.default)({
+            method: options.method || 'GET',
+            uri,
+            qs: options.query,
+            json: true,
+            transform: options.transform,
+            headers: {
+                'Signature': this.signUriAndQuery(uri, options.query) } });
+
+
+    }
+
+    verifyPayloadSignature(signature, payload, nonce, pubKey) {
+        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
+        const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
+        const signed = {
+            nonce,
+            payload };
+
+        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
+    }
+
+    verifyUriSignature(signature, fullUri, pubKey) {
+        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
+        const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
+        return keypair.verify(fullUri, Buffer.from(signature, 'base64'));
     }};
