@@ -1,3 +1,3 @@
 export * from './A3S';
-export * from './RequestSigner';
-export * from './JWTVerifier';
+export * from './ConnectionManager';
+export * from './utils';

@@ -2,7 +2,8 @@
 var _moment = require('moment');var _moment2 = _interopRequireDefault(_moment);
 var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
 var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
-var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
+var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);
+var _utils = require('./utils');function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 ConnectionManager = exports.ConnectionManager = class ConnectionManager {
     constructor(a3s, requestSigningSecretKey) {
@@ -138,7 +139,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
                 return body;
             }
 
-            if (!response.headers.signature || !self.verifyPayloadSignature(response.headers.signature, body, nonce)) {
+            if (!response.headers.signature || !(0, _utils.verifyPayloadSignature)(response.headers.signature, body, nonce)) {
                 return null;
             }
             return body;
@@ -167,20 +168,4 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
                 'Signature': this.signUriAndQuery(uri, options.query) } });
 
 
-    }
-
-    verifyPayloadSignature(signature, payload, nonce, pubKey) {
-        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
-        const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
-        const signed = {
-            nonce,
-            payload };
-
-        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
-    }
-
-    verifyUriSignature(signature, fullUri, pubKey) {
-        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
-        const keypair = _stellarSdk2.default.Keypair.fromPublicKey(pubKey);
-        return keypair.verify(fullUri, Buffer.from(signature, 'base64'));
     }};

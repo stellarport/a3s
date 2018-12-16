@@ -3,6 +3,7 @@ import moment from 'moment';
 import rpn from 'request-promise-native';
 import StellarSdk from 'stellar-sdk';
 import randomstring from 'randomstring';
+import {verifyPayloadSignature} from "./utils";
 
 export class ConnectionManager {
     constructor(a3s, requestSigningSecretKey) {
@@ -138,7 +139,7 @@ export class ConnectionManager {
                 return body;
             }
 
-            if (!response.headers.signature || !self.verifyPayloadSignature(response.headers.signature, body, nonce)) {
+            if (!response.headers.signature || !verifyPayloadSignature(response.headers.signature, body, nonce)) {
                 return null;
             }
             return body;
@@ -167,21 +168,5 @@ export class ConnectionManager {
                 'Signature': this.signUriAndQuery(uri, options.query)
             }
         });
-    }
-
-    verifyPayloadSignature(signature, payload, nonce, pubKey) {
-        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
-        const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
-        const signed = {
-            nonce,
-            payload
-        };
-        return keypair.verify(JSON.stringify(signed), Buffer.from(signature, 'base64'));
-    }
-
-    verifyUriSignature(signature, fullUri, pubKey) {
-        pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
-        const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
-        return keypair.verify(fullUri, Buffer.from(signature, 'base64'));
     }
 }
