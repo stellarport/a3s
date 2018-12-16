@@ -301,7 +301,10 @@ A3S = exports.A3S = class A3S {
             uri,
             qs: options.query,
             json: true,
-            transform: options.transform });
+            transform: options.transform,
+            headers: {
+                'Signature': this.connectionManager.signUriAndQuery(uri, options.query) } });
+
 
     }
 

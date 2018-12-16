@@ -27,6 +27,20 @@ export class ConnectionManager {
         return response;
     }
 
+    signUriAndQuery(uri, query = {}) {
+        return this.signText(
+            uri + Object.keys(query).reduce((result, key) => {
+                if (!query[key]) {
+                    return result;
+                }
+                if (result !== '?') {
+                    result += '&';
+                }
+                return result + key + '=' + query[key];
+            }, '?')
+        );
+    }
+
     /**
      * @param text
      */
