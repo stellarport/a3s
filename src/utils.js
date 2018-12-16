@@ -1,7 +1,6 @@
 import StellarSdk from "stellar-sdk";
 
 export function verifyPayloadSignature(signature, payload, nonce, pubKey) {
-    pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
     const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
     const signed = {
         nonce,
@@ -11,7 +10,6 @@ export function verifyPayloadSignature(signature, payload, nonce, pubKey) {
 }
 
 export function verifyUriSignature(signature, fullUri, pubKey) {
-    pubKey = pubKey || this.a3s.config.requestSigningPublicKey;
     const keypair = StellarSdk.Keypair.fromPublicKey(pubKey);
     return keypair.verify(fullUri, Buffer.from(signature, 'base64'));
 }
