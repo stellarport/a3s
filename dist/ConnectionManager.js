@@ -18,16 +18,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
        * @param payload
        */
     signResponsePayload(request, response, payload) {
-        if (request.query.nonce) {
-            const toSign = {
-                nonce: request.query.nonce,
-                payload };
-
-            const signature = this.signText(JSON.stringify(toSign));
-            response.set('Signature', signature);
-        }
-
-        return response;
+        return (0, _utils.signResponsePayload)(this.keypair, request, response, payload);
     }
 
     signUriAndQuery(uri, query = {}) {
@@ -41,7 +32,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         return (0, _utils.signText)(this.keypair, text);
     }
 
-    async verifyRequest(req, options = {}) {
+    async verifyRequestByJWT(req, options = {}) {
         if (!req.headers.authorization) {
             return {
                 verified: false,
@@ -58,10 +49,14 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
 
         }
 
-        return this.verifyToken(token, account);
+        return this.verifyJWT(token, account);
     }
 
-    async verifyToken(token, account) {
+    async verifyUriAndQuerySignature(signature, uri, query = {}) {
+        return (0, _utils.verifyUriAndQuerySignature)(signature, this.a3s.config.requestSigningPublicKey, uri, query);
+    }
+
+    async verifyJWT(token, account) {
         let payload = null;
         try {
             payload = new Promise((resolve, reject) => {

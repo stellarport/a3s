@@ -3,7 +3,7 @@ import moment from 'moment';
 import rpn from 'request-promise-native';
 import StellarSdk from 'stellar-sdk';
 import randomstring from 'randomstring';
-import {verifyPayloadSignature, signText, signUriAndQuery} from "./utils";
+import {verifyPayloadSignature, verifyUriAndQuerySignature, signText, signUriAndQuery, signResponsePayload} from "./utils";
 
 export class ConnectionManager {
     constructor(a3s, requestSigningSecretKey) {
@@ -18,16 +18,7 @@ export class ConnectionManager {
      * @param payload
      */
     signResponsePayload(request, response, payload) {
-        if (request.query.nonce) {
-            const toSign = {
-                nonce: request.query.nonce,
-                payload
-            };
-            const signature = this.signText(JSON.stringify(toSign));
-            response.set('Signature', signature);
-        }
-
-        return response;
+        return signResponsePayload(this.keypair, request, response, payload);
     }
 
     signUriAndQuery(uri, query = {}) {
@@ -41,7 +32,7 @@ export class ConnectionManager {
         return signText(this.keypair, text);
     }
 
-    async verifyRequest(req, options = {}) {
+    async verifyRequestByJWT(req, options = {}) {
         if (!req.headers.authorization) {
             return {
                 verified: false,
@@ -58,10 +49,14 @@ export class ConnectionManager {
             }
         }
 
-        return this.verifyToken(token, account);
+        return this.verifyJWT(token, account);
     }
 
-    async verifyToken(token, account) {
+    async verifyUriAndQuerySignature(signature, uri, query = {}) {
+        return verifyUriAndQuerySignature(signature, this.a3s.config.requestSigningPublicKey, uri, query);
+    }
+
+    async verifyJWT(token, account) {
         let payload = null;
         try {
             payload = new Promise((resolve, reject) => {
