@@ -31,24 +31,14 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
     }
 
     signUriAndQuery(uri, query = {}) {
-        return this.signText(
-        uri + Object.keys(query).reduce((result, key) => {
-            if (!query[key]) {
-                return result;
-            }
-            if (result !== '?') {
-                result += '&';
-            }
-            return result + key + '=' + query[key];
-        }, '?'));
-
+        return (0, _utils.signUriAndQuery)(this.keypair, uri, query);
     }
 
     /**
        * @param text
        */
     signText(text = '') {
-        return this.keypair.sign(text).toString('base64');
+        return (0, _utils.signText)(this.keypair, text);
     }
 
     async verifyRequest(req, options = {}) {
