@@ -2,20 +2,16 @@
 var _ConnectionManager = require('./ConnectionManager');let
 
 A3S = exports.A3S = class A3S {
-    /**
-                                * @param environment sandbox or production
-                                */
-    constructor(requestSigningSecretKey, environment) {
-        this.config = environment === 'sandbox' ? _a3sConfig.a3sConfig.sandbox : _a3sConfig.a3sConfig.production;
-        this.connectionManager = new _ConnectionManager.ConnectionManager(this, requestSigningSecretKey);
-    }
-
     useProd() {
         this.config = _a3sConfig.a3sConfig.production;
     }
 
     useSandbox() {
         this.config = _a3sConfig.a3sConfig.sandbox;
+    }
+
+    configure(config) {
+        this.connectionManager = new _ConnectionManager.ConnectionManager(this, config.requestSigningSecretKey);
     }
 
     /**

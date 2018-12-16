@@ -2,20 +2,16 @@ import {a3sConfig} from './a3sConfig';
 import {ConnectionManager} from './ConnectionManager';
 
 export class A3S {
-    /**
-     * @param environment sandbox or production
-     */
-    constructor(requestSigningSecretKey, environment) {
-        this.config = environment === 'sandbox' ? a3sConfig.sandbox : a3sConfig.production;
-        this.connectionManager = new ConnectionManager(this, requestSigningSecretKey);
-    }
-
     useProd() {
         this.config = a3sConfig.production;
     }
 
     useSandbox() {
         this.config = a3sConfig.sandbox;
+    }
+
+    configure(config) {
+        this.connectionManager = new ConnectionManager(this, config.requestSigningSecretKey);
     }
 
     /**
