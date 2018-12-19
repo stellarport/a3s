@@ -52,6 +52,17 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         return this.verifyJWT(token, account);
     }
 
+    async verifyRequestByUriAndQuerySignature(req) {
+        if (!req.headers.signature) {
+            return {
+                verified: false,
+                message: 'Please make sure your request has an Signature header.' };
+
+        }
+
+        return this.verifyUriAndQuerySignature(req.headers.signature || '', req.protocol + '://' + req.get('host') + req.path, req.query);
+    }
+
     async verifyUriAndQuerySignature(signature, uri, query = {}) {
         return (0, _utils.verifyUriAndQuerySignature)(signature, this.a3s.config.requestSigningPublicKey, uri, query);
     }
@@ -59,8 +70,8 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
     async verifyJWT(token, account) {
         let payload = null;
         try {
-            payload = new Promise((resolve, reject) => {
-                _jsonwebtoken2.default.verify(token, this.this.a3s.config.rsaPublicKey, { algorithms: ['RS256'] }, function (err, payload) {
+            payload = await new Promise((resolve, reject) => {
+                _jsonwebtoken2.default.verify(token, this.a3s.config.rsaPublicKey, { algorithms: ['RS256'] }, function (err, payload) {
                     if (err) {
                         return reject(err);
                     }
