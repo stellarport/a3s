@@ -86,7 +86,7 @@ export class ConnectionManager {
         catch (err) {
             return {
                 verified: false,
-                message: 'Could not verify jwt.'
+                message: err.message || 'Could not verify jwt.'
             }
         }
 
