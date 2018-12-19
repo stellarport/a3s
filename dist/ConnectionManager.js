@@ -100,7 +100,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
 
         }
 
-        if ((0, _moment2.default)().isAfter(payload.exp)) {
+        if ((0, _moment2.default)().isAfter(_moment2.default.unix(payload.exp))) {
             return {
                 verified: false,
                 message: 'Your login access has expired. Please request a new token.' };

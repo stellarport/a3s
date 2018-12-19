@@ -100,7 +100,7 @@ export class ConnectionManager {
             }
         }
 
-        if (moment().isAfter(payload.exp)) {
+        if (moment().isAfter(moment.unix(payload.exp))) {
             return {
                 verified: false,
                 message: 'Your login access has expired. Please request a new token.'
