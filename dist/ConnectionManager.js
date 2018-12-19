@@ -71,7 +71,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         let payload = null;
         try {
             payload = await new Promise((resolve, reject) => {
-                _jsonwebtoken2.default.verify(token, this.a3s.config.rsaPublicKey, { algorithms: ['RS256'] }, function (err, payload) {
+                _jsonwebtoken2.default.verify(token, this.a3s.config.jwt.rsaPublicKey, { algorithms: ['RS256'] }, function (err, payload) {
                     if (err) {
                         return reject(err);
                     }
@@ -86,7 +86,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
 
         }
 
-        if (!payload.iss || payload.iss !== this.a3s.config.iss) {
+        if (!payload.iss || payload.iss !== this.a3s.config.jwt.iss) {
             return {
                 verified: false,
                 message: 'Invalid token issuer.' };
