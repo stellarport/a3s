@@ -64,7 +64,11 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
     }
 
     async verifyUriAndQuerySignature(signature, uri, query = {}) {
-        return (0, _utils.verifyUriAndQuerySignature)(signature, this.a3s.config.requestSigningPublicKey, uri, query);
+        const verified = (0, _utils.verifyUriAndQuerySignature)(signature, this.a3s.config.requestSigningPublicKey, uri, query);
+        return {
+            verified,
+            message: verified ? undefined : 'Unable to verify signature.' };
+
     }
 
     async verifyJWT(token, account) {
