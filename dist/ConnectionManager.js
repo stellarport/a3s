@@ -40,7 +40,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
 
         }
         const token = req.headers.authorization.split(' ')[1];
-        const account = options.account || req.query.account;
+        const account = options.account || req.query.account || req.body.account;
 
         if (!account) {
             return {
