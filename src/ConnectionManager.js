@@ -139,7 +139,7 @@ export class ConnectionManager {
                 return body;
             }
 
-            if (!response.headers.signature || !verifyPayloadSignature(response.headers.signature, body, nonce, this.a3s.config.requestSigningPublicKey)) {
+            if (!response.headers.signature || !verifyPayloadSignature(response.headers.signature, body, nonce, self.a3s.config.requestSigningPublicKey)) {
                 return null;
             }
             return body;
