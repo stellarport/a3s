@@ -39,8 +39,5 @@ verifyUriAndQuerySignature = verifyUriAndQuerySignature;var _stellarSdk = requir
 }
 
 function textFromUriAndQuery(uri, query = {}) {
-    return JSON.stringify({
-        uri,
-        query });
-
+    return uri + '?' + Object.keys(query).filter(k => !!query[k]).sort().map(k => k + '=' + query[k]).join('&');
 }
