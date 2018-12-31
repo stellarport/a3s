@@ -3,7 +3,7 @@ import moment from 'moment';
 import rpn from 'request-promise-native';
 import StellarSdk from 'stellar-sdk';
 import randomstring from 'randomstring';
-import {verifyPayloadSignature, verifyUriAndQuerySignature, signText, signUriAndQuery, signResponsePayload} from "./utils";
+import {verifyPayloadSignature, verifyUriAndQuerySignature, signText, signUriAndQuery, signPayload, signResponsePayload} from "./utils";
 
 export class ConnectionManager {
     constructor(a3s, requestSigningSecretKey) {
@@ -11,12 +11,10 @@ export class ConnectionManager {
         this.keypair = StellarSdk.Keypair.fromSecret(requestSigningSecretKey);
     }
 
-    /**
-     * Sets the signature header on a response, corresponding to a payload.
-     * @param request
-     * @param response
-     * @param payload
-     */
+    signPayload(nonce, payload) {
+        return signPayload(this.keypair, nonce, payload);
+    }
+
     signResponsePayload(request, response, payload) {
         return signResponsePayload(this.keypair, request, response, payload);
     }
@@ -25,9 +23,6 @@ export class ConnectionManager {
         return signUriAndQuery(this.keypair, uri, query)
     }
 
-    /**
-     * @param text
-     */
     signText(text = '') {
         return signText(this.keypair, text);
     }

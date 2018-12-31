@@ -2,15 +2,19 @@ import StellarSdk from "stellar-sdk";
 
 export function signResponsePayload(keypair, request, response, payload) {
     if (request.query.nonce) {
-        const toSign = {
-            nonce: request.query.nonce,
-            payload
-        };
-        const signature = signText(keypair, JSON.stringify(toSign));
+        const signature = signPayload(keypair, request.query.nonce, payload);
         response.set('Signature', signature);
     }
 
     return response;
+}
+
+export function signPayload(keypair, nonce, payload) {
+    const toSign = {
+        nonce,
+        payload
+    };
+    return signText(keypair, JSON.stringify(toSign));
 }
 
 export function signUriAndQuery(keypair, uri, query = {}) {
