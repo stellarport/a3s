@@ -11,12 +11,10 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         this.keypair = _stellarSdk2.default.Keypair.fromSecret(requestSigningSecretKey);
     }
 
-    /**
-       * Sets the signature header on a response, corresponding to a payload.
-       * @param request
-       * @param response
-       * @param payload
-       */
+    signPayload(nonce, payload) {
+        return (0, _utils.signPayload)(this.keypair, nonce, payload);
+    }
+
     signResponsePayload(request, response, payload) {
         return (0, _utils.signResponsePayload)(this.keypair, request, response, payload);
     }
@@ -25,9 +23,6 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         return (0, _utils.signUriAndQuery)(this.keypair, uri, query);
     }
 
-    /**
-       * @param text
-       */
     signText(text = '') {
         return (0, _utils.signText)(this.keypair, text);
     }

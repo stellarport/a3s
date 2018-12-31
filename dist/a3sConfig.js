@@ -36,5 +36,5 @@
             '-----END RSA PUBLIC KEY-----',
             iss: 'a3s.api.stellarport.io' },
 
-        host: 'https://a3s-sandbox.api.stellarport.io/v2',
+        host: 'https://a3s.api.stellarport.io/v2',
         requestSigningPublicKey: 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX' } };
