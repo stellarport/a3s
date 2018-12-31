@@ -153,15 +153,30 @@ export class ConnectionManager {
      * @returns {Promise<void>}
      */
     async fetch(uri, options = {}) {
-        return rpn({
+        const requestParams = {
             method: options.method || 'GET',
             uri,
             qs: options.query,
             json: true,
-            transform: options.transform,
-            headers: {
+            transform: options.transform
+        };
+
+        if (this.a3s.clientType === 'relay') {
+            requestParams.headers = {
                 'Signature': this.signUriAndQuery(uri, options.query)
-            }
-        });
+            };
+        }
+        else if (this.a3s.clientType === 'account') {
+            const splitUri = uri.split('/');
+            const issuer = splitUri[splitUri.length - 2];
+            const account = options.query.account;
+            const token = await this.a3s.tokenProvider.token(issuer, account);\
+
+            requestParams.headers = {
+                'Authorization': 'Bearer ' + token
+            };
+        }
+
+        return rpn(requestParams);
     }
 }

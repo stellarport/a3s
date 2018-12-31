@@ -1,25 +1,62 @@
 import {a3sConfig} from './a3sConfig';
 import {ConnectionManager} from './ConnectionManager';
+import {TokenProvider} from "./TokenProvider";
 
 export class A3S {
+    clientType = 'relay';
+
+    get connectionManager() {
+        if (!this._connectionManager) {
+            this._connectionManager = new ConnectionManager(this, this.config.requestSigningSecretKey);
+        }
+        return this._connectionManager;
+    }
+    
+    get tokenProvider() {
+        if (!this._tokenProvider) {
+            this._tokenProvider = new TokenProvider(this, this.config.keypair);
+        }
+        return this._tokenProvider;
+    }
+
     useProd() {
         this.config = a3sConfig.production;
+        return this;
     }
 
     useSandbox() {
         this.config = a3sConfig.sandbox;
+        return this;
+    }
+
+    useAsRelay() {
+        this.clientType = 'relay';
+        return this;
+    }
+
+    useAsAccount() {
+        this.clientType = 'account';
+        return this;
     }
 
     configure(config) {
-        this.connectionManager = new ConnectionManager(this, config.requestSigningSecretKey);
+        this.config = config;
+        return this;
     }
 
     /**
      * Fetches info from A3S regarding what assets are available
      * @returns {Promise<Object>}
      */
-    async info(asset_issuer) {
-        return this.connectionManager.fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
+    async info(asset_issuer, account) {
+        return this.connectionManager.fetchAndVerify(
+            this.config.host + '/' + asset_issuer + '/Info',
+            {
+                query: {
+                    account
+                }
+            }
+        );
     }
 
     /**
@@ -49,13 +86,14 @@ export class A3S {
     /**
      * Fetches a specific transaction. One of id, stellar_transaction_id or external_transaction_id must be specified.
      * @param asset_issuer
+     * @param account
      * @param [options]
      * @param {number} [options.id]
      * @param {string} [options.stellar_transaction_id]
      * @param {string} [options.external_transaction_id]
      * @returns {Promise<Object>}
      */
-    async transaction(asset_issuer, options = {}) {
+    async transaction(asset_issuer, account, options = {}) {
         if (!options.id && !options.stellar_transaction_id && !options.external_transaction_id) {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
@@ -64,6 +102,7 @@ export class A3S {
             this.config.host + '/' + asset_issuer + '/Transaction',
             {
                 query: {
+                    account,
                     ...options
                 }
             }
