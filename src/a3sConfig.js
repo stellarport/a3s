@@ -16,7 +16,7 @@ export const a3sConfig = {
             '-----END RSA PUBLIC KEY-----',
             iss: 'a3s-sandbox.api.stellarport.io'
         },
-        host: 'https://a3s.api.stellarport.io/v2',
+        host: 'https://a3s-sandbox.api.stellarport.io/v2',
         requestSigningPublicKey: 'GC5FZPWTXINH652NYEW56UM6FZZVHDLLERX3KKL55PVQB2D5A2DG4Q47'
     },
     production: {
