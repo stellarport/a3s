@@ -4,6 +4,7 @@ var _TokenProvider = require('./TokenProvider');
 var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 A3S = exports.A3S = class A3S {constructor() {this.
+        config = _a3sConfig.a3sConfig.sandbox;this.
         clientType = 'relay';}
 
     get connectionManager() {
@@ -47,7 +48,10 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @returns {A3S}
        */
     configure(config) {
-        this.config = config;
+        this.config = {
+            ...this.config,
+            ...config };
+
         return this;
     }
 

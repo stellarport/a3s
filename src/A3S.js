@@ -4,6 +4,7 @@ import {TokenProvider} from "./TokenProvider";
 import StellarSdk from 'stellar-sdk';
 
 export class A3S {
+    config = a3sConfig.sandbox;
     clientType = 'relay';
 
     get connectionManager() {
@@ -47,7 +48,10 @@ export class A3S {
      * @returns {A3S}
      */
     configure(config) {
-        this.config = config;
+        this.config = {
+            ...this.config,
+            ...config
+        };
         return this;
     }
 
