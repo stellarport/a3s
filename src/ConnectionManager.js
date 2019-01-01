@@ -54,7 +54,7 @@ export class ConnectionManager {
             }
         }
 
-        return this.verifyUriAndQuerySignature(req.headers.signature || '', req.protocol + '://' + req.get('host') + req.path, req.query);
+        return this.verifyUriAndQuerySignature(req.headers.signature || '', req.get('host') + req.path, req.query);
     }
 
     async verifyUriAndQuerySignature(signature, uri, query = {}) {
