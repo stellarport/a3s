@@ -1,20 +1,21 @@
 import {a3sConfig} from './a3sConfig';
 import {ConnectionManager} from './ConnectionManager';
 import {TokenProvider} from "./TokenProvider";
+import StellarSdk from 'stellar-sdk';
 
 export class A3S {
     clientType = 'relay';
 
     get connectionManager() {
         if (!this._connectionManager) {
-            this._connectionManager = new ConnectionManager(this, this.config.requestSigningSecretKey);
+            this._connectionManager = new ConnectionManager(this, this.keypairFromSecret(this.config.secret));
         }
         return this._connectionManager;
     }
     
     get tokenProvider() {
         if (!this._tokenProvider) {
-            this._tokenProvider = new TokenProvider(this, this.config.keypair);
+            this._tokenProvider = new TokenProvider(this, this.keypairFromSecret(this.config.secret));
         }
         return this._tokenProvider;
     }
@@ -39,6 +40,12 @@ export class A3S {
         return this;
     }
 
+    /**
+     * Configures A3S
+     * @param config
+     * @param config.secret Secret key to sign with
+     * @returns {A3S}
+     */
     configure(config) {
         this.config = config;
         return this;
@@ -275,5 +282,9 @@ export class A3S {
         return {
             withdrawal: payload.transaction
         };
+    }
+
+    keypairFromSecret(secret) {
+        return secret instanceof StellarSdk.Keypair ? secret : StellarSdk.Keypair.fromSecret(secret);
     }
 }

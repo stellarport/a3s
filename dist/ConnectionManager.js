@@ -1,14 +1,13 @@
 'use strict';exports.__esModule = true;exports.ConnectionManager = undefined;var _jsonwebtoken = require('jsonwebtoken');var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 var _moment = require('moment');var _moment2 = _interopRequireDefault(_moment);
 var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
-var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);
 var _randomstring = require('randomstring');var _randomstring2 = _interopRequireDefault(_randomstring);
 var _utils = require('./utils');function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 ConnectionManager = exports.ConnectionManager = class ConnectionManager {
-    constructor(a3s, requestSigningSecretKey) {
+    constructor(a3s, keypair) {
         this.a3s = a3s;
-        this.keypair = _stellarSdk2.default.Keypair.fromSecret(requestSigningSecretKey);
+        this.keypair = keypair;
     }
 
     signPayload(nonce, payload) {

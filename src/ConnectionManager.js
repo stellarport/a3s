@@ -1,14 +1,13 @@
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import rpn from 'request-promise-native';
-import StellarSdk from 'stellar-sdk';
 import randomstring from 'randomstring';
 import {verifyPayloadSignature, verifyUriAndQuerySignature, signText, signUriAndQuery, signPayload, signResponsePayload} from "./utils";
 
 export class ConnectionManager {
-    constructor(a3s, requestSigningSecretKey) {
+    constructor(a3s, keypair) {
         this.a3s = a3s;
-        this.keypair = StellarSdk.Keypair.fromSecret(requestSigningSecretKey);
+        this.keypair = keypair;
     }
 
     signPayload(nonce, payload) {

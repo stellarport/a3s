@@ -1,20 +1,21 @@
 'use strict';exports.__esModule = true;exports.A3S = undefined;var _a3sConfig = require('./a3sConfig');
 var _ConnectionManager = require('./ConnectionManager');
-var _TokenProvider = require('./TokenProvider');let
+var _TokenProvider = require('./TokenProvider');
+var _stellarSdk = require('stellar-sdk');var _stellarSdk2 = _interopRequireDefault(_stellarSdk);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 A3S = exports.A3S = class A3S {constructor() {this.
         clientType = 'relay';}
 
     get connectionManager() {
         if (!this._connectionManager) {
-            this._connectionManager = new _ConnectionManager.ConnectionManager(this, this.config.requestSigningSecretKey);
+            this._connectionManager = new _ConnectionManager.ConnectionManager(this, this.keypairFromSecret(this.config.secret));
         }
         return this._connectionManager;
     }
 
     get tokenProvider() {
         if (!this._tokenProvider) {
-            this._tokenProvider = new _TokenProvider.TokenProvider(this, this.config.keypair);
+            this._tokenProvider = new _TokenProvider.TokenProvider(this, this.keypairFromSecret(this.config.secret));
         }
         return this._tokenProvider;
     }
@@ -39,6 +40,12 @@ A3S = exports.A3S = class A3S {constructor() {this.
         return this;
     }
 
+    /**
+       * Configures A3S
+       * @param config
+       * @param config.secret Secret key to sign with
+       * @returns {A3S}
+       */
     configure(config) {
         this.config = config;
         return this;
@@ -275,4 +282,8 @@ A3S = exports.A3S = class A3S {constructor() {this.
         return {
             withdrawal: payload.transaction };
 
+    }
+
+    keypairFromSecret(secret) {
+        return secret instanceof _stellarSdk2.default.Keypair ? secret : _stellarSdk2.default.Keypair.fromSecret(secret);
     }};
