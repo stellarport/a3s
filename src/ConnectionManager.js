@@ -169,8 +169,7 @@ export class ConnectionManager {
         else if (this.a3s.clientType === 'account') {
             const splitUri = uri.split('/');
             const issuer = splitUri[splitUri.length - 2];
-            const account = options.query.account;
-            const token = await this.a3s.tokenProvider.token(issuer, account);\
+            const token = await this.a3s.tokenProvider.token(issuer);
 
             requestParams.headers = {
                 'Authorization': 'Bearer ' + token

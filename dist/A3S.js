@@ -1,17 +1,47 @@
 'use strict';exports.__esModule = true;exports.A3S = undefined;var _a3sConfig = require('./a3sConfig');
-var _ConnectionManager = require('./ConnectionManager');let
+var _ConnectionManager = require('./ConnectionManager');
+var _TokenProvider = require('./TokenProvider');let
 
-A3S = exports.A3S = class A3S {
+A3S = exports.A3S = class A3S {constructor() {this.
+        clientType = 'relay';}
+
+    get connectionManager() {
+        if (!this._connectionManager) {
+            this._connectionManager = new _ConnectionManager.ConnectionManager(this, this.config.requestSigningSecretKey);
+        }
+        return this._connectionManager;
+    }
+
+    get tokenProvider() {
+        if (!this._tokenProvider) {
+            this._tokenProvider = new _TokenProvider.TokenProvider(this, this.config.keypair);
+        }
+        return this._tokenProvider;
+    }
+
     useProd() {
         this.config = _a3sConfig.a3sConfig.production;
+        return this;
     }
 
     useSandbox() {
         this.config = _a3sConfig.a3sConfig.sandbox;
+        return this;
+    }
+
+    useAsRelay() {
+        this.clientType = 'relay';
+        return this;
+    }
+
+    useAsAccount() {
+        this.clientType = 'account';
+        return this;
     }
 
     configure(config) {
-        this.connectionManager = new _ConnectionManager.ConnectionManager(this, config.requestSigningSecretKey);
+        this.config = config;
+        return this;
     }
 
     /**
@@ -19,7 +49,9 @@ A3S = exports.A3S = class A3S {
        * @returns {Promise<Object>}
        */
     async info(asset_issuer) {
-        return this.connectionManager.fetchAndVerify(this.config.host + '/' + asset_issuer + '/Info');
+        return this.connectionManager.fetchAndVerify(
+        this.config.host + '/' + asset_issuer + '/Info');
+
     }
 
     /**
@@ -63,9 +95,7 @@ A3S = exports.A3S = class A3S {
         const payload = await this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Transaction',
         {
-            query: {
-                ...options } });
-
+            query: options });
 
 
 

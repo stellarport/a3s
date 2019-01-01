@@ -153,14 +153,28 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
        * @returns {Promise<void>}
        */
     async fetch(uri, options = {}) {
-        return (0, _requestPromiseNative2.default)({
+        const requestParams = {
             method: options.method || 'GET',
             uri,
             qs: options.query,
             json: true,
-            transform: options.transform,
-            headers: {
-                'Signature': this.signUriAndQuery(uri, options.query) } });
+            transform: options.transform };
 
 
+        if (this.a3s.clientType === 'relay') {
+            requestParams.headers = {
+                'Signature': this.signUriAndQuery(uri, options.query) };
+
+        } else
+        if (this.a3s.clientType === 'account') {
+            const splitUri = uri.split('/');
+            const issuer = splitUri[splitUri.length - 2];
+            const token = await this.a3s.tokenProvider.token(issuer);
+
+            requestParams.headers = {
+                'Authorization': 'Bearer ' + token };
+
+        }
+
+        return (0, _requestPromiseNative2.default)(requestParams);
     }};

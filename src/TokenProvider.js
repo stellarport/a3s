@@ -1,22 +1,30 @@
+import moment from 'moment';
 import rpn from "request-promise-native";
 
 export class TokenProvider {
-    tokenMap = {};
+    get cachedTokenIsValid() {
+        if (!this._token) {
+            return false;
+        }
+
+        // Token is cached and not yet expired
+        return moment().isBefore(moment.unix(parseInt(this._token.exp, 10)));
+    }
 
     constructor(a3s, keypair) {
         this.a3s = a3s;
         this.keypair = keypair;
     }
 
-    async token(account, issuer) {
-        let token = this.tokenMap[account + issuer];
-        if (token) {
-            return token;
+    async token(issuer) {
+        if (!this.cachedTokenIsValid) {
+            await this.fetchToken(issuer);
         }
-        return this.fetchToken;
+        return this._token.token;
     }
 
-    async fetchToken(account, issuer) {
+    async fetchToken(issuer) {
+        const account = this.keypair.publicKey();
         const uri = '/Authentication' + '/' + issuer;
         const qs = {account};
 
@@ -45,7 +53,7 @@ export class TokenProvider {
 
         const token = tokenResponse.token;
 
-        this.tokenMap[account + issuer] = {
+        this._token = {
             token,
             exp: this.parseJwt(token).exp
         };

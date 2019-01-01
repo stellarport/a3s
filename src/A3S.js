@@ -48,14 +48,9 @@ export class A3S {
      * Fetches info from A3S regarding what assets are available
      * @returns {Promise<Object>}
      */
-    async info(asset_issuer, account) {
+    async info(asset_issuer) {
         return this.connectionManager.fetchAndVerify(
-            this.config.host + '/' + asset_issuer + '/Info',
-            {
-                query: {
-                    account
-                }
-            }
+            this.config.host + '/' + asset_issuer + '/Info'
         );
     }
 
@@ -86,14 +81,13 @@ export class A3S {
     /**
      * Fetches a specific transaction. One of id, stellar_transaction_id or external_transaction_id must be specified.
      * @param asset_issuer
-     * @param account
      * @param [options]
      * @param {number} [options.id]
      * @param {string} [options.stellar_transaction_id]
      * @param {string} [options.external_transaction_id]
      * @returns {Promise<Object>}
      */
-    async transaction(asset_issuer, account, options = {}) {
+    async transaction(asset_issuer, options = {}) {
         if (!options.id && !options.stellar_transaction_id && !options.external_transaction_id) {
             throw new Error('id or stellar_transaction_id or external_transaction_id is required by transaction()');
         }
@@ -101,10 +95,7 @@ export class A3S {
         const payload = await this.connectionManager.fetchAndVerify(
             this.config.host + '/' + asset_issuer + '/Transaction',
             {
-                query: {
-                    account,
-                    ...options
-                }
+                query: options
             }
         );
 
