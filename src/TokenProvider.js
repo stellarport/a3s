@@ -66,6 +66,10 @@ export class TokenProvider {
     parseJwt(token) {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(window.atob(base64));
+        return JSON.parse(this.atob(base64));
+    }
+
+    atob(b64string) {
+        return (new Buffer(b64string, 'base64')).toString('binary');
     }
 }
