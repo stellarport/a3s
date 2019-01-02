@@ -25,7 +25,7 @@ export class TokenProvider {
 
     async fetchToken(issuer) {
         const account = this.keypair.publicKey();
-        const uri = '/Authentication' + '/' + issuer;
+        const uri = this.a3s.config.host + '/' + issuer + '/Authentication';
         const qs = {account};
 
         const challengeResponse = await rpn({
