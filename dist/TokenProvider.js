@@ -1,5 +1,6 @@
-'use strict';exports.__esModule = true;exports.TokenProvider = undefined;var _moment = require('moment');var _moment2 = _interopRequireDefault(_moment);
-var _requestPromiseNative = require('request-promise-native');var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
+"use strict";exports.__esModule = true;exports.TokenProvider = undefined;var _moment = require("moment");var _moment2 = _interopRequireDefault(_moment);
+var _requestPromiseNative = require("request-promise-native");var _requestPromiseNative2 = _interopRequireDefault(_requestPromiseNative);
+var _stellarSdk = require("stellar-sdk");var _stellarSdk2 = _interopRequireDefault(_stellarSdk);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}let
 
 TokenProvider = exports.TokenProvider = class TokenProvider {
     get cachedTokenIsValid() {
@@ -35,7 +36,7 @@ TokenProvider = exports.TokenProvider = class TokenProvider {
             json: true });
 
 
-        let signedTransaction = new StellarSdk.Transaction(challengeResponse.transaction).sign(this.keypair);
+        let signedTransaction = new _stellarSdk2.default.Transaction(challengeResponse.transaction).sign(this.keypair);
 
         const tokenResponse = await (0, _requestPromiseNative2.default)({
             method: 'POST',

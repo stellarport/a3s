@@ -1,5 +1,6 @@
 import moment from 'moment';
 import rpn from "request-promise-native";
+import StellarSdk from "stellar-sdk";
 
 export class TokenProvider {
     get cachedTokenIsValid() {
