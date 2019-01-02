@@ -37,7 +37,7 @@ TokenProvider = exports.TokenProvider = class TokenProvider {
 
 
         let transaction = new _stellarSdk2.default.Transaction(challengeResponse.transaction);
-        let signedTransaction = transaction.sign(this.keypair);
+        transaction.sign(this.keypair);
 
         const tokenResponse = await (0, _requestPromiseNative2.default)({
             method: 'POST',
@@ -45,7 +45,7 @@ TokenProvider = exports.TokenProvider = class TokenProvider {
             qs,
             json: true,
             body: {
-                transaction: signedTransaction.toEnvelope().toXDR('base64') } });
+                transaction: transaction.toEnvelope().toXDR('base64') } });
 
 
 
