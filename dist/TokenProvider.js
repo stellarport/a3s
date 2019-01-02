@@ -36,7 +36,8 @@ TokenProvider = exports.TokenProvider = class TokenProvider {
             json: true });
 
 
-        let signedTransaction = new _stellarSdk2.default.Transaction(challengeResponse.transaction).sign(this.keypair);
+        let transaction = new _stellarSdk2.default.Transaction(challengeResponse.transaction);
+        let signedTransaction = transaction.sign(this.keypair);
 
         const tokenResponse = await (0, _requestPromiseNative2.default)({
             method: 'POST',

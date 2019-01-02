@@ -36,7 +36,8 @@ export class TokenProvider {
             json: true
         });
 
-        let signedTransaction = (new StellarSdk.Transaction(challengeResponse.transaction)).sign(this.keypair);
+        let transaction = new StellarSdk.Transaction(challengeResponse.transaction);
+        let signedTransaction = transaction.sign(this.keypair);
 
         const tokenResponse = await rpn({
             method:  'POST',
