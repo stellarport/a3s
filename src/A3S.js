@@ -231,6 +231,7 @@ export class A3S {
                 query: {
                     asset_code,
                     dest,
+                    account,
                     ...options
                 }
             }

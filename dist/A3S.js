@@ -231,6 +231,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
             query: {
                 asset_code,
                 dest,
+                account,
                 ...options } });
 
 
