@@ -219,11 +219,12 @@ A3S = exports.A3S = class A3S {constructor() {this.
        * @param {string} asset_code
        * @param {string} asset_issuer
        * @param {string} dest
+       * @param {string} account
        * @param {Object} [options]
        * @param {string} [options.dest_extra] A dest extra if required
        * @returns {Promise<void>}
        */
-    async withdrawalInstructions(asset_code, asset_issuer, dest, options = {}) {
+    async withdrawalInstructions(asset_code, asset_issuer, dest, account, options = {}) {
         return this.connectionManager.fetchAndVerify(
         this.config.host + '/' + asset_issuer + '/Withdraw',
         {
