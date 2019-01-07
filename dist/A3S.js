@@ -22,12 +22,12 @@ A3S = exports.A3S = class A3S {constructor() {this.
     }
 
     useProd() {
-        this.config = _a3sConfig.a3sConfig.production;
+        this.configure(_a3sConfig.a3sConfig.sandbox);
         return this;
     }
 
     useSandbox() {
-        this.config = _a3sConfig.a3sConfig.sandbox;
+        this.configure(_a3sConfig.a3sConfig.sandbox);
         return this;
     }
 
