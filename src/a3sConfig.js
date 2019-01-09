@@ -14,7 +14,7 @@ export const a3sConfig = {
             '3XHqoFd6QqYzkel9nSC3ncFWpA51vF7Ax2/UW33gQdCTfM6+zDUTRhhm6GJnYUE4\n' +
             'WUPTF73sw3enX/L1OCgH6dsS+17GsQJeGTCbNMm9N41712KSxdDN0dsCAwEAAQ==\n' +
             '-----END RSA PUBLIC KEY-----',
-            iss: 'a3s-sandbox.api.stellarport.io'
+            iss: 'dev.stellarport.io'
         },
         host: 'https://a3s-sandbox.api.stellarport.io/v2',
         requestSigningPublicKey: 'GC5FZPWTXINH652NYEW56UM6FZZVHDLLERX3KKL55PVQB2D5A2DG4Q47'
@@ -34,7 +34,7 @@ export const a3sConfig = {
             'FYhMqXNxnVlt9KMtCUxj4Ecw3n0PA98QJqPx45DlDnfRmrlV0h6EcAY870nU3u6w\n' +
             'douwbZG9P361JWNXW/BWG3fsEnuGOAfm3hxJLSowhyWsb/NL1xIPj38CAwEAAQ==\n' +
             '-----END RSA PUBLIC KEY-----',
-            iss: 'a3s.api.stellarport.io'
+            iss: 'stellarport.io'
         },
         host: 'https://a3s.api.stellarport.io/v2',
         requestSigningPublicKey: 'GABWHTAVRYF2MCNDR5YC5SC3JTZQBGDZ3HKI4QAREV5533VU43W4HJUX'
