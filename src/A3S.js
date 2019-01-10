@@ -22,7 +22,7 @@ export class A3S {
     }
 
     useProd() {
-        this.configure(a3sConfig.sandbox);
+        this.configure(a3sConfig.production);
         return this;
     }
 

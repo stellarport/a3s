@@ -22,7 +22,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     }
 
     useProd() {
-        this.configure(_a3sConfig.a3sConfig.sandbox);
+        this.configure(_a3sConfig.a3sConfig.production);
         return this;
     }
 
