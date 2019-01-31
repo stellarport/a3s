@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import rpn from 'request-promise-native';
 import randomstring from 'randomstring';
-import {verifyPayloadSignature, verifyUriAndQuerySignature, signText, signUriAndQuery, signPayload, signResponsePayload} from "./utils";
+import {verifyPayloadSignature, verifyUriAndQuerySignature, signText, signUriAndQuery, signPayload, signResponsePayload, verifyJWT} from "./utils";
 
 export class ConnectionManager {
     constructor(a3s, keypair) {
@@ -43,7 +43,9 @@ export class ConnectionManager {
             }
         }
 
-        return this.verifyJWT(token, account);
+        return this.verifyJWT(token, account, {
+            jwtPublicKey: options.jwtPublicKey
+        });
     }
 
     async verifyRequestByUriAndQuerySignature(req) {
@@ -65,49 +67,14 @@ export class ConnectionManager {
         }
     }
 
-    async verifyJWT(token, account) {
-        let payload = null;
-        try {
-            payload = await new Promise((resolve, reject) => {
-                jwt.verify(token, this.a3s.config.jwt.rsaPublicKey, { algorithms: ['RS256'] }, function (err, payload) {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve(payload);
-                });
-            })
-        }
-        catch (err) {
-            return {
-                verified: false,
-                message: err.message || 'Could not verify jwt.'
-            }
-        }
-
-        if (!payload.iss || payload.iss !== this.a3s.config.jwt.iss) {
-            return {
-                verified: false,
-                message: 'Invalid token issuer.'
-            }
-        }
-
-        if (!payload.sub || payload.sub !== account) {
-            return {
-                verified: false,
-                message: 'Token subject does not match account.'
-            }
-        }
-
-        if (moment().isAfter(moment.unix(payload.exp))) {
-            return {
-                verified: false,
-                message: 'Your login access has expired. Please request a new token.'
-            }
-        }
-
-        return {
-            verified: true
-        }
+    async verifyJWT(token, account, options = {}) {
+        return verifyJWT(token, account, options.jwtPublicKey || this.a3s.config.jwt.rsaPublicKey,
+            options.jwtPublicKey ?
+                null :
+                {
+                    iss: this.a3s.config.jwt.iss
+                }
+            );
     }
 
     /**

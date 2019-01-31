@@ -43,7 +43,9 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
 
         }
 
-        return this.verifyJWT(token, account);
+        return this.verifyJWT(token, account, {
+            jwtPublicKey: options.jwtPublicKey });
+
     }
 
     async verifyRequestByUriAndQuerySignature(req) {
@@ -65,48 +67,13 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
 
     }
 
-    async verifyJWT(token, account) {
-        let payload = null;
-        try {
-            payload = await new Promise((resolve, reject) => {
-                _jsonwebtoken2.default.verify(token, this.a3s.config.jwt.rsaPublicKey, { algorithms: ['RS256'] }, function (err, payload) {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve(payload);
-                });
-            });
-        }
-        catch (err) {
-            return {
-                verified: false,
-                message: err.message || 'Could not verify jwt.' };
+    async verifyJWT(token, account, options = {}) {
+        return (0, _utils.verifyJWT)(token, account, options.jwtPublicKey || this.a3s.config.jwt.rsaPublicKey,
+        options.jwtPublicKey ?
+        null :
+        {
+            iss: this.a3s.config.jwt.iss });
 
-        }
-
-        if (!payload.iss || payload.iss !== this.a3s.config.jwt.iss) {
-            return {
-                verified: false,
-                message: 'Invalid token issuer.' };
-
-        }
-
-        if (!payload.sub || payload.sub !== account) {
-            return {
-                verified: false,
-                message: 'Token subject does not match account.' };
-
-        }
-
-        if ((0, _moment2.default)().isAfter(_moment2.default.unix(payload.exp))) {
-            return {
-                verified: false,
-                message: 'Your login access has expired. Please request a new token.' };
-
-        }
-
-        return {
-            verified: true };
 
     }
 
