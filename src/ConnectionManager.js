@@ -26,6 +26,54 @@ export class ConnectionManager {
         return signText(this.keypair, text);
     }
 
+    async verifyRequestJWTByAccount(req, account, options = {}) {
+        if (!account) {
+            return {
+                verified: false,
+                message: 'Account is required.'
+            }
+        }
+
+        return this.verifyRequestJWT(req, {
+            ...options,
+            account
+        });
+    }
+
+    async verifyRequestJWT(req, options = {}) {
+        if (!req.headers.authorization) {
+            return {
+                verified: false,
+                message: 'Please make sure your request has an Authorization header.'
+            }
+        }
+
+        const token = req.headers.authorization.split(' ')[1];
+        const result = this.verifyJWT(token, options);
+
+        if (!result.verified) {
+            return result;
+        }
+
+        req.jwtClaims = result.claims;
+
+        return result;
+    }
+
+    async verifyJWT(token, options = {}) {
+        return verifyJWT(
+            token,
+            options.jwtPublicKey || this.a3s.config.jwt.rsaPublicKey,
+            {
+                iss: options.jwtPublicKey ? null :this.a3s.config.jwt.iss,
+                account: options.account
+            }
+        );
+    }
+
+    /**
+     * @deprecated
+     */
     async verifyRequestByJWT(req, options = {}) {
         if (!req.headers.authorization) {
             return {
@@ -65,16 +113,6 @@ export class ConnectionManager {
             verified,
             message: verified ? undefined : 'Unable to verify signature.'
         }
-    }
-
-    async verifyJWT(token, account, options = {}) {
-        return verifyJWT(token, account, options.jwtPublicKey || this.a3s.config.jwt.rsaPublicKey,
-            options.jwtPublicKey ?
-                null :
-                {
-                    iss: this.a3s.config.jwt.iss
-                }
-            );
     }
 
     /**

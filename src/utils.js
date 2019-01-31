@@ -30,7 +30,7 @@ export function signText(keypair, text = '') {
     return keypair.sign(text).toString('base64');
 }
 
-export async function verifyJWT(token, account, publicKey, options = {}) {
+export async function verifyJWT(token, publicKey, options = {}) {
     let payload = null;
     try {
         payload = await jwtClaims(token, publicKey);
@@ -51,10 +51,12 @@ export async function verifyJWT(token, account, publicKey, options = {}) {
         }
     }
 
-    if (!payload.sub || payload.sub !== account) {
-        return {
-            verified: false,
-            message: 'Token subject does not match account.'
+    if (options.account) {
+        if (!payload.sub || payload.sub !== options.account) {
+            return {
+                verified: false,
+                message: 'Token subject does not match account.'
+            }
         }
     }
 
@@ -66,7 +68,8 @@ export async function verifyJWT(token, account, publicKey, options = {}) {
     }
 
     return {
-        verified: true
+        verified: true,
+        claims: payload
     }
 }
 
