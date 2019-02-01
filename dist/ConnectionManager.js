@@ -49,7 +49,7 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
         }
 
         const token = req.headers.authorization.split(' ')[1];
-        const result = this.verifyJWT(token, options);
+        const result = await this.verifyJWT(token, options);
 
         if (!result.verified) {
             return result;
