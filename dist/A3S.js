@@ -248,7 +248,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
         return this.connectionManager.fetchAndVerify(
         this.config.host + '/Withdraw/Sent',
         {
-            query: { id } });
+            query: { tx_hash, op_order } });
 
 
     }
