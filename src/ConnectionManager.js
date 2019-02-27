@@ -55,6 +55,7 @@ export class ConnectionManager {
             return result;
         }
 
+        req.jwt = token;
         req.jwtClaims = result.claims;
 
         return result;
