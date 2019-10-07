@@ -1,6 +1,6 @@
 {
   "name": "a3s",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Stellarport A3S SDK",
   "main": "dist/index.js",
   "scripts": {

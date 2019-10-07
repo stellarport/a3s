@@ -170,6 +170,10 @@ ConnectionManager = exports.ConnectionManager = class ConnectionManager {
             requestParams.headers = {
                 'Signature': this.signUriAndQuery(uri, options.query) };
 
+
+            if (this.a3s.rateLimitKey) {
+                requestParams.headers['x-rate-limit-key'] = this.a3s.rateLimitKey;
+            }
         } else
         if (this.a3s.clientType === 'account') {
             const splitUri = uri.split('/');
