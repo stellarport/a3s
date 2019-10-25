@@ -163,7 +163,8 @@ export class ConnectionManager {
             uri,
             qs: options.query,
             json: true,
-            transform: options.transform
+            transform: options.transform,
+            timeout: 60 * 1000
         };
 
         if (this.a3s.clientType === 'relay') {
