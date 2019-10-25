@@ -144,7 +144,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     async deposit(asset_issuer, id) {
         const payload = await this.transaction(asset_issuer, { id });
 
-        if (payload && payload.transaction.kind !== 'deposit') {
+        if (!payload || payload.transaction.kind !== 'deposit') {
             return null;
         }
 
@@ -281,7 +281,7 @@ A3S = exports.A3S = class A3S {constructor() {this.
     async withdrawal(asset_issuer, id) {
         const payload = await this.transaction(asset_issuer, { id });
 
-        if (payload && payload.transaction.kind !== 'withdrawal') {
+        if (!payload || payload.transaction.kind !== 'withdrawal') {
             return null;
         }
 

@@ -13,7 +13,7 @@ export class A3S {
         }
         return this._connectionManager;
     }
-    
+
     get tokenProvider() {
         if (!this._tokenProvider) {
             this._tokenProvider = new TokenProvider(this, this.keypairFromSecret(this.config.secret));
@@ -144,7 +144,7 @@ export class A3S {
     async deposit(asset_issuer, id) {
         const payload = await this.transaction(asset_issuer, {id});
 
-        if (payload && payload.transaction.kind !== 'deposit') {
+        if (!payload || payload.transaction.kind !== 'deposit') {
             return null;
         }
 
@@ -281,7 +281,7 @@ export class A3S {
     async withdrawal(asset_issuer, id) {
         const payload = await this.transaction(asset_issuer, {id});
 
-        if (payload && payload.transaction.kind !== 'withdrawal') {
+        if (!payload || payload.transaction.kind !== 'withdrawal') {
             return null;
         }
 
