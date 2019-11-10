@@ -191,6 +191,18 @@ export class A3S {
         );
     }
 
+    async refund(reference, asset_code, asset_issuer) {
+        return this.connectionManager.fetchAndVerify(
+            this.config.host + '/' + asset_issuer + '/Deposit/Refund',
+            {
+                query: {
+                    reference,
+                    asset_code
+                }
+            }
+        );
+    }
+
     /**
      * Fetches deposit instructions from A3S.
      * @param {string} asset_code
